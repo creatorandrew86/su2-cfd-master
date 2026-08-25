@@ -53,5 +53,4 @@ INC_VELOCITY_INIT= ( 1.0, 0.0, 0.0 )
 Before presenting the generated .cfg, confirm:
 - Every MARKER_* references a name that exists in the case's mesh.
 - Every option included is actually consumed by the chosen SOLVER (cross-check
-  against `references/solvers.md`).
-- No option was pulled into the file "just in case" — trim anything not doing work.
+  against `references/solvers.md`) and every option is REQUIRED.

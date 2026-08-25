@@ -7,11 +7,10 @@ description: Use this skill when creating or editing SU2 CFD configuration files
 
 ## Workflow
 1. Identify problem type: EULER, NAVIER_STOKES, RANS, or another solver variant
-   (incompressible, FEM/DG, heat, NEMO, etc.). See `references/solver_types.md`.
-2. Identify or generate the mesh. If starting from a Gmsh `.geo` file, see
-   `references/mesh_su2_format.md` for the conversion command and Physical Group rules.
+   (incompressible, FEM/DG, heat, NEMO, etc.). See `references/solvers.md`.
+2. Identify the mesh file and the boundaries. See `references/mesh.md` for the Physical Group rules.
 3. Match `MARKER_*` entries in the `.cfg` to the Physical Group names in the mesh.
-   See `references/boundary_markers.md`.
+   See `references/bc.md`.
 4. Set numerics (convective scheme, CFL, limiters) appropriate to the case.
    See `references/numerics.md`.
 5. Build the actual `.cfg` from `assets/master.cfg` — this is the required base/source
@@ -21,6 +20,7 @@ description: Use this skill when creating or editing SU2 CFD configuration files
 7. Sanity-check the finished config: every included option is actually used by the
    chosen SOLVER, every MARKER_* matches the mesh, nothing extraneous was copied in.
 
+
 ## Key conventions
 - Config syntax: `KEY= VALUE`, comments start with `%`.
 - Always set MATH_PROBLEM (DIRECT unless doing adjoint/optimization).
@@ -29,8 +29,6 @@ description: Use this skill when creating or editing SU2 CFD configuration files
 - `assets/master.cfg` is the base for ALL generated config files. Only pull in
   sections/options relevant to the case
 
+
 ## When debugging
-Differentiate physical vs. non-physical issues first (divergence from bad BCs/mesh quality
-vs. flow physics). Check convergence/residual behavior before changing physical
-setup. Cross-reference and check SU2 forum threads (cfd-online.com/Forums/su2) and the official docs
-(su2code.github.io/docs) for solver-specific error messages and other problems.
+When the user reports or asks about a problem with the solution or the program, check `references/debugging.md`.
