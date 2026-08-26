@@ -11,6 +11,13 @@ Use this reference when an SU2 run fails to start, diverges or stalls, or produc
 5. Make one controlled change at a time, rerun, and record whether the symptom changed.
 6. Search the exact error or warning, including the SU2 version, on the official documentation, SU2 GitHub issues, and CFD-Online SU2 forums. Treat forum suggestions as hypotheses and verify them against the case.
 
+## Inspection scope and approval
+
+- Do not inspect or parse the entire `.vtu`, `.vtk`, or `.su2` file by default. Use only the headers, metadata, relevant excerpts, marker definitions, mesh statistics, solver diagnostics, or targeted regions needed for the reported symptom.
+- Inspect an entire `.vtu`, `.vtk`, or `.su2` file only when the user explicitly requests it or after explaining why it is necessary and receiving the user's approval.
+- If the evidence suggests a mesh problem, report the suspicion in chat and explain the evidence, likely impact, and specific mesh region or property involved. A suspected mesh problem is not permission to perform a full-file inspection.
+- If approval is granted, state what file will be inspected, why, and what will be checked; avoid dumping the complete file into chat.
+
 ## Program does not run
 
 Check the `.cfg` first:
