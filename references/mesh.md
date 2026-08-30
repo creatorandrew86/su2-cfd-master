@@ -1,30 +1,21 @@
-# SU2 Native Mesh File Structure
+# SU2 native mesh
 
-An ASCII `.su2` file is an ordered sequence of dimension, point, interior-element, and boundary-marker sections:
+An ASCII `.su2` mesh is ordered as dimension, points, interior elements, then marker blocks:
 
 ```text
-NDIME= <2 or 3>
-NPOIN= <point count>
-<point coordinates>
-NELEM= <interior-element count>
+NDIME= <2|3>
+NPOIN= <count>
+<coordinates>
+NELEM= <count>
 <interior elements>
-NMARK= <marker count>
+NMARK= <count>
 <marker blocks>
 ```
 
-All point indices are zero-based and assigned by their order in the `NPOIN` section. A 2D point has `x y`; a 3D point has `x y z`. Legacy files may append a redundant point index.
+- Point indices are zero-based and follow the `NPOIN` order. Points are `x y` in 2D and `x y z` in 3D; legacy files may append a redundant index.
+- Element records are `<VTK type> <point index> ...`.
 
-## Interior elements
-
-After `NELEM=`, each record is:
-
-```text
-<VTK type> <point index> ...
-```
-
-Common VTK type identifiers are:
-
-| ID | Element | Points |
+| VTK type | Element | Points |
 |---:|---|---:|
 | `5` | triangle | 3 |
 | `9` | quadrilateral | 4 |
@@ -33,35 +24,12 @@ Common VTK type identifiers are:
 | `13` | prism | 6 |
 | `14` | pyramid | 5 |
 
-## Boundary markers
-
-`NMARK` gives the number of marker blocks. Each block has this structure:
+## Marker block
 
 ```text
-MARKER_TAG= <marker name>
-MARKER_ELEMS= <boundary-element count>
-<boundary element 0>
-...
-<boundary element count-1>
+MARKER_TAG= <name>
+MARKER_ELEMS= <count>
+<boundary elements>
 ```
 
-The `MARKER_TAG` value is the exact boundary-marker name used for boundary conditions. Marker names are case-sensitive. Boundary records use the same format as interior elements and reference the global point indices:
-
-```text
-<VTK type> <point index> ...
-```
-
-For 2D meshes, boundary elements are normally lines (`3`, two points). For 3D meshes, they are normally triangles (`5`, three points) or quadrilaterals (`9`, four points).
-
-Example:
-
-```text
-NMARK= 2
-MARKER_TAG= inlet
-MARKER_ELEMS= 1
-3 0 1
-MARKER_TAG= wall
-MARKER_ELEMS= 2
-3 1 2
-3 2 3
-```
+`MARKER_TAG` is the exact, case-sensitive name used by `.cfg` boundary conditions. Boundary elements use the same record form and global point indices: normally lines (`3`) in 2D and triangles (`5`) or quadrilaterals (`9`) in 3D.

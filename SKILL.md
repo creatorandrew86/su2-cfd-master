@@ -1,34 +1,25 @@
 ---
 name: su2-cfd-master
-description: Use this skill when creating or editing SU2 CFD configuration files (.cfg) and setting up SU2_CFD solver runs
+description: Create, edit, and debug SU2 CFD configuration files (.cfg) and SU2_CFD runs.
 ---
 
-# SU2 CFD Configuration
+# SU2 CFD configuration
 
-## Workflow
-1. Identify problem type: EULER, NAVIER_STOKES, RANS, or another solver variant
-   (incompressible, FEM/DG, heat, NEMO, etc.). See `references/solvers.md`.
-2. Identify the mesh file and the boundaries. See `references/mesh.md` for the Physical Group rules.
-3. Match `MARKER_*` entries in the `.cfg` to the Physical Group names in the mesh.
-   See `references/bc.md`.
-4. Set numerics (convective scheme, CFL, limiters) appropriate to the case.
-   See `references/numerics.md`.
-5. Build the actual `.cfg` from `assets/master.cfg` — this is the required base/source
-   of truth for every option and its documentation. See `references/init.md`
-   for the extraction and formatting process. Never invent option names or values.
-6. Verify MESH_FILENAME / MESH_FORMAT match the actual mesh file.
-7. Sanity-check the finished config: every included option is actually used by the
-   chosen SOLVER, every MARKER_* matches the mesh, nothing extraneous was copied in.
+## Build a case
 
+1. Choose `SOLVER` and `MATH_PROBLEM` (`DIRECT` unless optimization/adjoints are requested). See `references/solvers.md`.
+2. Inspect the mesh dimension and marker names. See `references/mesh.md`.
+3. Assign each mesh marker the appropriate `MARKER_*` boundary condition. Names are case-sensitive. See `references/bc.md`.
+4. Choose applicable flow, turbulence, and numerical settings. See `references/numerics.md`.
+5. Use `assets/master.cfg` as the only option-name/value reference; never invent options. Extract only the needed sections and keys as described in `references/init.md`.
+6. Verify `MESH_FILENAME` and `MESH_FORMAT`, marker names, solver compatibility, and that no irrelevant options remain.
 
-## Key conventions
-- Config syntax: `KEY= VALUE`, comments start with `%`.
-- Always set MATH_PROBLEM (DIRECT unless doing adjoint/optimization).
-- SU2 expects SI units unless REF_DIMENSIONALIZATION says otherwise — flag this explicitly.
-- Boundary marker names are case-sensitive and must match the mesh exactly.
-- `assets/master.cfg` is the base for ALL generated config files. Only pull in
-  sections/options relevant to the case
+## Rules
 
+- Use `KEY= VALUE`; `%` starts a comment.
+- Use SI units unless `REF_DIMENSIONALIZATION` changes them; state this explicitly.
+- Include only settings required by the solver or needed to override a sensible default.
 
-## When debugging
-When the user reports or asks about a problem with the solution or the program, check `references/debugging.md`.
+## Debugging
+
+For startup errors, convergence issues, or questionable results, follow `references/debugging.md`.

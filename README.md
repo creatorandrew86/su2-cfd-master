@@ -1,15 +1,14 @@
 # SU2 CFD Skill
 
-This skill helps an AI agent create, inspect, and debug SU2 computational-fluid-dynamics runs. It focuses on producing valid `.cfg` files, matching them to native `.su2` meshes, and diagnosing failures using the actual solver, physics, boundary markers, numerics, and output.
+Guidance for agents that create, inspect, and debug SU2 cases.
 
-The workflow begins by identifying the solver and physical problem, then checking mesh structure and marker names before selecting boundary conditions and numerical methods. Configuration options are taken from the supplied master template rather than invented. The skill also provides guidance for startup errors, divergence, stalled convergence, and results that appear plausible but require verification.
+| Need | Reference |
+|---|---|
+| Solver and physics | `references/solvers.md` |
+| Mesh layout and marker names | `references/mesh.md` |
+| Boundary conditions | `references/bc.md` |
+| Numerics and convergence settings | `references/numerics.md` |
+| Generating a compact case `.cfg` | `references/init.md` |
+| Failures and result validation | `references/debugging.md` |
 
-Reference files cover:
-
-- solver and physics selection;
-- native `.su2` mesh structure and boundary markers;
-- boundary-condition conventions;
-- numerical methods and initialization;
-- debugging, convergence, and solution skepticism.
-
-Use the debugging guidance to compare `.cfg` files, meshes, logs, official SU2 examples, GitHub issues, and relevant CFD-Online discussions. Treat convergence and physical correctness as separate questions, and make changes one hypothesis at a time.
+Use `assets/master.cfg` as the source of truth for SU2 options. The main instructions are in `SKILL.md`.

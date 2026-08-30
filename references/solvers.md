@@ -1,78 +1,31 @@
-# SU2 Solvers — Full Reference
+# Solvers and physics
 
-## SOLVER keyword — all possible values
-SOLVER= EULER, NAVIER_STOKES, RANS,
-INC_EULER, INC_NAVIER_STOKES, INC_RANS,
-NEMO_EULER, NEMO_NAVIER_STOKES,
-FEM_EULER, FEM_NAVIER_STOKES, FEM_RANS, FEM_LES,
-HEAT_EQUATION_FVM, ELASTICITY
+## `SOLVER`
 
-### Compressible
-- `EULER` — inviscid, no boundary layer, no turbulence model.
-- `NAVIER_STOKES` — viscous, laminar. Requires VISCOSITY_MODEL, CONDUCTIVITY_MODEL.
-- `RANS` — viscous + turbulence closure. Requires KIND_TURB_MODEL.
+| Family | Values | Use |
+|---|---|---|
+| Compressible FVM | `EULER`, `NAVIER_STOKES`, `RANS` | Inviscid; viscous laminar; viscous turbulent. |
+| Incompressible FVM | `INC_EULER`, `INC_NAVIER_STOKES`, `INC_RANS` | Same progression; use the `INC_*` condition section, not compressible freestream settings. |
+| Nonequilibrium | `NEMO_EULER`, `NEMO_NAVIER_STOKES` | Finite-rate, multispecies, thermal-nonequilibrium flow. |
+| High-order DG | `FEM_EULER`, `FEM_NAVIER_STOKES`, `FEM_RANS`, `FEM_LES` | Inviscid, laminar, RANS, or LES (`KIND_SGS_MODEL`). |
+| Other | `HEAT_EQUATION_FVM`, `ELASTICITY`, `MULTIPHYSICS` | Conduction; structural mechanics; coupled zones. |
 
-### Incompressible (INC_ prefix)
-- `INC_EULER` — inviscid, incompressible.
-- `INC_NAVIER_STOKES` — viscous, laminar, incompressible.
-- `INC_RANS` — viscous + turbulence, incompressible.
-- All three use the INCOMPRESSIBLE FLOW CONDITION DEFINITION section
-  (INC_DENSITY_MODEL, INC_VELOCITY_INIT, INC_NONDIM, etc.) instead of the
-  compressible free-stream block.
+`HEAT_EQUATION` is deprecated; use `HEAT_EQUATION_FVM`. `MULTIPHYSICS` requires `CONFIG_LIST= (configA.cfg, configB.cfg, ...)`.
 
-### Nonequilibrium / hypersonic (NEMO)
-- `NEMO_EULER` / `NEMO_NAVIER_STOKES` — finite-rate chemistry, multi-species,
-  thermal nonequilibrium flows. Needs GAS_MODEL, GAS_COMPOSITION,
-  FREESTREAM_TEMPERATURE_VE (vibrational temp), IONIZATION.
+## Required companions
 
-### High-order FEM / DG
-- `FEM_EULER`, `FEM_NAVIER_STOKES` — discontinuous Galerkin, inviscid/viscous.
-- `FEM_RANS` — DG + turbulence.
-- `FEM_LES` — DG large-eddy simulation. Uses KIND_SGS_MODEL
-  (NONE, IMPLICIT_LES, SMAGORINSKY, WALE, VREMAN).
-
-### Other physics
-- `HEAT_EQUATION_FVM` — standalone conduction/heat solver (finite volume only,
-  no flow). Older tutorials may show `HEAT_EQUATION` — that name is deprecated,
-  current SU2 expects `HEAT_EQUATION_FVM`.
-- `ELASTICITY` — structural solid mechanics (linear/nonlinear elasticity),
-  used standalone or coupled in FSI.
-- `MULTIPHYSICS` — driver for coupled multizone problems (e.g. CHT, FSI).
-  Requires `CONFIG_LIST= (configA.cfg, configB.cfg, ...)`, one sub-config per zone.
-
-## Turbulence models (RANS / INC_RANS / FEM_RANS)
-`KIND_TURB_MODEL= NONE, SA, SST`
-- `SA` — Spalart-Allmaras, one-equation, robust default for attached/mildly
-  separated flow. Modifiers via `SA_OPTIONS`: NEGATIVE, EDWARDS, WITHFT2,
-  QCR2000, COMPRESSIBILITY, ROTATION, BCM, EXPERIMENTAL.
-- `SST` — Menter k-omega SST, two-equation, better for separation/adverse
-  pressure gradient. Modifiers via `SST_OPTIONS`: V2003m, V1994m, VORTICITY,
-  KATO_LAUNDER, UQ, SUSTAINING, COMPRESSIBILITY-WILCOX, COMPRESSIBILITY-SARKAR,
-  DIMENSIONLESS_LIMIT.
-
-### Transition
-`KIND_TRANS_MODEL= NONE, LM` (Langtry-Menter), with `LM_OPTIONS`: LM2015,
-MALAN, SULUKSNA, KRAUSE, KRAUSE_HYPER, MEDIDA, MEDIDA_BAEDER, MENTER_LANGTRY.
-
-### Hybrid RANS/LES
-`HYBRID_RANSLES= SA_DES, SA_DDES, SA_ZDES, SA_EDDES` — only meaningful when
-combined with a RANS solver and TIME_DOMAIN= YES (unsteady).
-
-## Required companion settings by solver family
-| SOLVER family | Needs |
+| Solver | Also set |
 |---|---|
-| EULER / INC_EULER / FEM_EULER | FLUID_MODEL, freestream or INC_* conditions |
-| NAVIER_STOKES / INC_NAVIER_STOKES / FEM_NAVIER_STOKES | + VISCOSITY_MODEL, CONDUCTIVITY_MODEL |
-| RANS / INC_RANS / FEM_RANS | + KIND_TURB_MODEL, FREESTREAM_TURBULENCEINTENSITY, FREESTREAM_TURB2LAMVISCRATIO, CONV_NUM_METHOD_TURB |
-| NEMO_EULER / NEMO_NAVIER_STOKES | + GAS_MODEL, GAS_COMPOSITION, FREESTREAM_TEMPERATURE_VE |
-| HEAT_EQUATION_FVM | THERMAL_CONDUCTIVITY_CONSTANT, MATERIAL_DENSITY, MARKER_ISOTHERMAL/HEATFLUX |
-| ELASTICITY | MATERIAL_MODEL, structural BCs (MARKER_CLAMPED, etc. — not covered here) |
-| MULTIPHYSICS | CONFIG_LIST with one .cfg per zone |
+| Euler variants | `FLUID_MODEL` and freestream or `INC_*` conditions |
+| Navier-Stokes variants | Above + `VISCOSITY_MODEL`, `CONDUCTIVITY_MODEL` |
+| RANS variants | Above + `KIND_TURB_MODEL`, freestream turbulence values, `CONV_NUM_METHOD_TURB` |
+| NEMO | `GAS_MODEL`, `GAS_COMPOSITION`, `FREESTREAM_TEMPERATURE_VE` |
+| Heat | `THERMAL_CONDUCTIVITY_CONSTANT`, `MATERIAL_DENSITY`, thermal markers |
+| Elasticity | `MATERIAL_MODEL` and structural markers |
 
-## MATH_PROBLEM
-`MATH_PROBLEM= DIRECT, CONTINUOUS_ADJOINT, DISCRETE_ADJOINT`
-- `DIRECT` — standard forward simulation (default for normal runs).
-- `CONTINUOUS_ADJOINT` / `DISCRETE_ADJOINT` — gradient/sensitivity computation
-  for shape optimization. Every direct solver has a corresponding adjoint
-  formulation; set only if the user explicitly needs optimization/sensitivities.
-  Discrete adjoint is the modern/recommended approach over continuous adjoint.
+## Turbulence and adjoints
+
+- `KIND_TURB_MODEL= NONE, SA, SST`. `SA` is a robust one-equation choice for attached/mildly separated flow; `SST` generally handles separation/adverse pressure gradients better. Use their `*_OPTIONS` only when needed.
+- Transition: `KIND_TRANS_MODEL= NONE, LM`; use `LM_OPTIONS` for the required correlation.
+- Hybrid RANS/LES: `HYBRID_RANSLES= SA_DES, SA_DDES, SA_ZDES, SA_EDDES`; requires RANS and `TIME_DOMAIN= YES`.
+- `MATH_PROBLEM= DIRECT, CONTINUOUS_ADJOINT, DISCRETE_ADJOINT`. Use `DIRECT` normally; set an adjoint only for requested sensitivities/optimization. Prefer discrete adjoint when applicable.
